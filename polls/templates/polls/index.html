@@ -3,7 +3,7 @@
     {% for question in latest_question_list %}
         <!-- <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li> これだとtemplateによってURLの変更が面倒-->
         <!-- polls.urlsのpath関数で使用したnameを使うことができる -->
-        <li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li> 
+        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
