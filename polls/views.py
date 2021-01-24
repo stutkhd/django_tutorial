@@ -8,12 +8,11 @@ from .models import Question
 
 def index(request):
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    # DjangoがTemplateを探す時はアプリのtemplatesディレクトリの中から探すからpathに注意
-    template = loader.get_template('polls/index.html')
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
+    context = {'latest_question_list': latest_question_list}
+    # template = loader.get_template('polls/index.html') # DjangoがTemplateを探す時はアプリのtemplatesディレクトリの中から探すからpathに注意
+    # return HttpResponse(template.render(context, request))
+    #↑ 省略可能 ↑
+    return render(request, 'polls/index.html', context)
 
 def detail(request, question_id):
     return HttpResponse("You're looking at question %s." % question_id)
