@@ -6,6 +6,7 @@ from django.template import loader
 
 from .models import Question
 
+#質問一覧view
 def index(request):
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
     context = {'latest_question_list': latest_question_list}
@@ -16,10 +17,17 @@ def index(request):
 
 # 質問詳細view
 def detail(request, question_id):
+    """
     try:
         question = Question.objects.get(pk=question_id)
     except Question.DoesNotExist:
         raise Http404("Question does not exist")
+    return render(request, 'polls/detail.html', {'question': question})
+    """
+    #↑ 省略可能 ↑
+    # getを実行してオブジェクトが存在しない場合にHtto404をレスポンスするときに使う
+    # get_list_or_404()もあるが,これはfileterを使用する。リストが空のときに404を返す
+    question = get_object_or_404(Question, pk=question_id)
     return render(request, 'polls/detail.html', {'question': question})
 
 def results(request, question_id):
