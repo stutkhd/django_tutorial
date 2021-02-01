@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from django.http import HttpResponse
@@ -25,7 +25,7 @@ def detail(request, question_id):
     return render(request, 'polls/detail.html', {'question': question})
     """
     #↑ 省略可能 ↑
-    # getを実行してオブジェクトが存在しない場合にHtto404をレスポンスするときに使う
+    # getを実行してオブジェクトが存在しない場合にHttp404をレスポンスするときに使う
     # get_list_or_404()もあるが,これはfileterを使用する。リストが空のときに404を返す
     question = get_object_or_404(Question, pk=question_id)
     return render(request, 'polls/detail.html', {'question': question})
