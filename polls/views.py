@@ -1,10 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-
-# Create your views here.
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
+from django.urls import reverse
 
-from .models import Question
+from .models import Choice, Question
 
 #質問一覧view
 def index(request):
@@ -35,4 +34,28 @@ def results(request, question_id):
     return HttpResponse(response % question_id)
 
 def vote(request, question_id):
-    return HttpResponse("You're voting on question %s." % question_id)
+    question = get_object_or_404(Question, pk=question_id)
+    try:
+        # request.POSTは辞書のようなオブジェクト, keyを指定すると送信したデータにアクセスできる
+        # request.POST['choice']だと選択された選択IDを文字列で返す(request.POSTの返り値は文字列)
+        selected_choice = question.choice_set.get(pk=request.POST['choice'])
+    except (KeyError, Choice.DoesNotExist): # choiceがない場合のエラー処理
+        # エラー文付き質問フォームを見せる renderでtemplateから取り出してくる
+        return render(request, 'polls/detail.html', {
+            'question': question,
+            'error_message': "You didn't select a choice.",
+        })
+    else:
+        selected_choice.votes += 1
+        selected_choice.save()
+        '''
+        POSTデータを正しく扱えたら常にHttpResponseRedirectを返す
+        これによりユーザーが戻るボタンを押した場合にデータが2回投稿されるのを防ぐ
+        -> Webの基本: POSTデータが成功したら常にHttpResponseRedirectを返す
+        '''
+        # HttpResponseRedirectはリダイレクト先のURLを引数にとる
+        # reverse()を使用することで、view関数中でのURLのハードコードを防げる
+        # 関数には制御したいビューの名前と、そのビューに与えるURLパターンの位置引数を与える
+        # reverseを使用すると'/polls/3/results/'が返ってくる(3はqueston.idの値, リダイレクト先のURLはresults)
+        # で最終的なページを表示する
+        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))

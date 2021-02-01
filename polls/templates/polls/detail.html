@@ -1,7 +1,16 @@
 <!-- templateシステムは変数の属性にアクセスするためにドット検索の構文を使用する -->
 <h1>{{ question.question_text }}</h1>
-<ul>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<!-- postにすることで、フォームの送信とサーバー側のデータの更新をつなげられる, サーバー側のデータを更新するときはPOST -->
+<form action="{% url 'polls:vote' question.id %}" method="post">
+<!-- POSTを使用した場合はcsrfのテンプレートタグを使用すべき -->
+{% csrf_token %}
 {% for choice in question.choice_set.all %}
-    <li>{{ choice.choice_text }}</li>
+    <!-- ラジオボタンのvalueは関連する質問の選択肢のID, 投票者がラジオボタンを選んでフォーム送信するとPOSTデータchoice=xxx(選択肢ID)が送信される -->
+    <!-- forloop.counterはforタグのループが何度実行されたか表す値 -->
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
 {% endfor %}
-</ul>
+<input type="submit" value="Vote">
+</form>
